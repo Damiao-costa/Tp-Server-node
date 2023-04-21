@@ -19,12 +19,12 @@ const server = http.createServer((req, res)=>{
 
     switch (req.url){
         case '/':
-            
+
             if (req.method === "POST") {
                 let search = "";
                 req.on("data", (data) => {
-                search += data;
-            });
+                    search += data;
+                });
         
                 // On écoute maintenant la fin de l'envoi des données avec la méthode on et l'attribut end
                 req.on("end", () => {
