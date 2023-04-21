@@ -1,6 +1,11 @@
 const fs = require('fs');
 const ejs = require('ejs');
-const http = require('http')
+const http = require('http');
+const dayjs = require('dayjs');
+require('dayjs/locale/fr');
+var localizedFormat = require('dayjs/plugin/localizedFormat')
+dayjs.locale('fr');
+dayjs.extend(localizedFormat)
 
 const hostname = "127.0.0.1";
 const port = 3000;
@@ -26,12 +31,8 @@ const server = http.createServer((req, res)=>{
            
             let users = "<ul>";
             for (const { name,birth } of students){
-                if(searchValue === name)
-                {
-                    console.log("in if: "+searchValue);
-                    users += `<li>${name}</li>
-                    <li>${birth}</li><br>` ;
-                }
+                const date = dayjs(birth, "YYYY-MM-DD").format('LL');
+                users += `<li>Name: ${name}  Date: ${date} <button type="submit" href="/"> Delete </button></li> <br>` ;
             }
             users += "</ul>";
 
@@ -51,17 +52,21 @@ const server = http.createServer((req, res)=>{
         
                 // On écoute maintenant la fin de l'envoi des données avec la méthode on et l'attribut end
                 req.on("end", () => {
-                    console.log(search)
                     const replacer = new RegExp(/\+/, "g");
         
                     searchValue = search.toString().split(/=/).pop().replace(replacer, ' ');
                     console.log(searchValue)
+
+                    students.push({
+                        name:searchValue, birth: new Date()
+                    });
                     
                     // redirection le code 301 indique une redirection permamente
                     res.writeHead(301, { Location: `http://${hostname}:${port}` });
                     res.end();
                 });
             }
+            break;
     }
 });
 
