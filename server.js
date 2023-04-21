@@ -19,7 +19,30 @@ const server = http.createServer((req, res)=>{
 
     switch (req.url){
         case '/':
+            const aboutTemplate = fs.readFileSync('./view/home.html', 'utf8');
+            const aboutRendered = ejs.render(aboutTemplate);
+            res.writeHead(200, {'Content-Type': 'text/html'});
+            res.write(aboutRendered);
+           
+            let users = "<ul>";
+            for (const { name,birth } of students){
+                if(searchValue === name)
+                {
+                    console.log("in if: "+searchValue);
+                    users += `<li>${name}</li>
+                    <li>${birth}</li><br>` ;
+                }
+            }
+            users += "</ul>";
 
+            res.end(`
+                    ${users}
+                    </body>
+                </html>
+            `);
+            break;
+
+        case '/post':
             if (req.method === "POST") {
                 let search = "";
                 req.on("data", (data) => {
@@ -39,31 +62,8 @@ const server = http.createServer((req, res)=>{
                     res.end();
                 });
             }
-
-            const aboutTemplate = fs.readFileSync('./view/home.html', 'utf8');
-            const aboutRendered = ejs.render(aboutTemplate);
-            res.writeHead(200, {'Content-Type': 'text/html'});
-            res.write(aboutRendered);
-           
-            let users = "<ul>";
-            for (const { name,birth } of students){
-                if(searchValue === name)
-                {
-                    console.log("in if: "+searchValue);
-                    users += `<li>${name}</li>
-                    <li>${birth}</li><br>` ;
-                }
-                }
-            users += "</ul>";
-
-            res.end(`
-                    ${users}
-                    </body>
-                </html>
-            `);
-            break;
     }
-})
+});
 
 server.listen(port, hostname, () => {
     console.log(`Server running at http://${hostname}:${port}/`);
