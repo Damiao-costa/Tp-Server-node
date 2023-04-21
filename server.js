@@ -23,6 +23,13 @@ const students = [
 const server = http.createServer((req, res)=>{
 
     switch (req.url){
+        case '/css':
+            res.writeHead(200, { "Content-Type": "text/css" });
+            const css = fs.readFileSync("./assets/css/style.css");
+            res.write(css);
+            res.end();
+            break;
+
         case '/':
             const aboutTemplate = fs.readFileSync('./view/home.html', 'utf8');
             const aboutRendered = ejs.render(aboutTemplate);
@@ -55,12 +62,12 @@ const server = http.createServer((req, res)=>{
                     const replacer = new RegExp(/\+/, "g");
         
                     searchValue = search.toString().split(/=/).pop().replace(replacer, ' ');
-                    console.log(searchValue)
-
-                    students.push({
-                        name:searchValue, birth: new Date()
-                    });
-                    
+                    if(searchValue.length > 1)
+                    {
+                        students.push({
+                            name:searchValue, birth: new Date()
+                        });
+                    }
                     // redirection le code 301 indique une redirection permamente
                     res.writeHead(301, { Location: `http://${hostname}:${port}` });
                     res.end();
